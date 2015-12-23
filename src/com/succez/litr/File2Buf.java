@@ -10,11 +10,10 @@ public class File2Buf {
 
 	/**
 	 * 函数file2buf用于读取一个文件的内容并将其转化为数组
-	 * @param f 一个文件对象
-	 * @return byte[] 一个数组
+	 * @param f 一个文件对象，不能为一个目录，不能为空，不能大于2G
+	 * @return 返回一个byte数组
 	 * @throws IllegalArgumentException 在传入的file对象为空、传入的文件对象是一个目录或者读取的文件大于2G时会抛出此异常
 	 * @throws IOException 当文件读取过程中出现错误时会抛出此异常
-	 * @date 2015年12月15日
 	 */
 	public byte[] file2Buf(File f) throws IOException, IllegalArgumentException {
 		if (f == null) {
@@ -44,7 +43,6 @@ public class File2Buf {
 							Math.min(4096, intLen - count))) != -1) {
 				count += n;
 			}
-
 		} finally {
 			if (bis != null) {
 				try {

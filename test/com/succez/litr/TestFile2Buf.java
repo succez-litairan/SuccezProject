@@ -4,10 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Random;
-
-import junit.framework.TestCase;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -24,7 +20,7 @@ public class TestFile2Buf {
 	public void testIllegalArgumentException1()
 			throws IllegalArgumentException, IOException {
 		File f = null;
-		byte[] actuals = f2b.file2Buf(f);
+		f2b.file2Buf(f);
 	}
 
 	/**
@@ -36,7 +32,7 @@ public class TestFile2Buf {
 	public void testIllegalArgumentException2()
 			throws IllegalArgumentException, IOException {
 		File f = new File("C:/");
-		byte[] actuals = f2b.file2Buf(f);
+		f2b.file2Buf(f);
 	}
 
 	/**
@@ -48,7 +44,7 @@ public class TestFile2Buf {
 	public void testIllegalArgumentException3()
 			throws IllegalArgumentException, IOException {
 		File f = new File("e:/test.zip");
-		byte[] actuals = f2b.file2Buf(f);
+		f2b.file2Buf(f);
 	}
 
 	/**
@@ -60,11 +56,11 @@ public class TestFile2Buf {
 	public void testFileNotFoundException() throws IllegalArgumentException,
 			IOException {
 		File f = new File("c:/test.zip");
-		byte[] actuals = f2b.file2Buf(f);
+		f2b.file2Buf(f);
 	}
 
 	/**
-	 * 验证文件输出的结果是否正确
+	 * 验证读取各个长度的文件，输出的结果是否正确
 	 * @throws IllegalArgumentException
 	 * @throws IOException
 	 */
@@ -78,11 +74,15 @@ public class TestFile2Buf {
 		test(1024 * 4 + 1);
 	}
 
+	/**
+	 * 验证读取给定长度的文件，输出结果是否正确
+	 * @throws IllegalArgumentException
+	 * @throws IOException
+	 */
 	private void test(int length) throws IllegalArgumentException, IOException {
 
 		File f = new File("C:/abc.txt");
 		byte[] expected = new byte[length];
-		Random random = new Random();
 		for (int i = 0; i < expected.length; i++) {
 			expected[i] = (byte) ('A' + i % 26);
 		}

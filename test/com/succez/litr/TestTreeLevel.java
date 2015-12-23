@@ -32,7 +32,6 @@ public class TestTreeLevel {
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void testException3() throws Exception {
-
 		tree.TreeLevel(tree.createTree("A##"), 0);
 	}
 

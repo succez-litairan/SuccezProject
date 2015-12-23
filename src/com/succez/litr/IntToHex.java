@@ -3,9 +3,13 @@ package com.succez.litr;
 public class IntToHex {
 
 	/**
-	 * 函数intToHex对输入的整数n进行分类处理再调用posToHex
-	 * @param n 一个整数
-	 * @return String 一个字符串对象
+	 * 返回一个整数的十六进制字符串
+	 * <pre>
+	 *  intToHex(-100) == "-64"
+	 *  intToHex(255) == "FF"
+	 * </pre>
+	 * @param n 一个整数,取回范围为-0x80000000~0x7FFFFFFF
+	 * @return 字符串
 	 */
 	public static String intToHex(int n) {
 
@@ -34,6 +38,9 @@ public class IntToHex {
 
 	}
 
+	/**
+	 * 字符数组HEX_CHARS用于存储字符'0'~'F'
+	 */
 	private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5',
 			'6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
