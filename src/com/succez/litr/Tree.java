@@ -23,11 +23,10 @@ public class Tree {
 	 * @return Node Node对象
 	 * @throws Exception 
 	 */
-	public Node createTree(String s) throws Exception {
-
+	public Node createTree(String s)  {
 		Node root = new Node();
 		if (s == null || s == "") {
-			throw new Exception("树不能为空！");
+			throw new IllegalArgumentException("树不能为空！");
 		}
 		if (index < s.length()) {
 			root.value = s.charAt(index);
@@ -76,12 +75,12 @@ public class Tree {
 	 * @return
 	 * @throws Exception 
 	 */
-	public String TreeLevel(Node node, int len) throws Exception {
+	public String TreeLevel(Node node, int len) {
 		if (len==0){
-			throw new Exception("树没有0层！");
+			throw new IllegalArgumentException("树没有0层！");
 		}
 		if(len>this.getTreeLevel(node)){
-			throw new Exception("树没有第"+len+"层！");
+			throw new IllegalArgumentException("树没有第"+len+"层！");
 		}
 		if (len == 1) {
 			treelevelString += node.value;
