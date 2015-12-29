@@ -1,6 +1,5 @@
 package WebServer;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -36,15 +35,13 @@ public class Request {
 	 * @throws IOException 当读取文件出错或流关闭出错时会抛出此异常
 	 */
 	public void parse() throws IOException {
-		byte[] b = new byte[4096];
-		BufferedInputStream bis = new BufferedInputStream(input);
-		try {
-			bis.read(b);
-		} finally {
-			if (bis != null) {
-				bis.close();
-			}
+		byte[] b = new byte[1024];
+		StringBuilder req = new StringBuilder(1024);
+		int i = input.read(b);
+		for (int j = 0; j < i; j++) {
+			req.append((char) b[j]);
 		}
+		System.out.print(req.toString());
 		uri = parseURI(new String(b));
 	}
 
