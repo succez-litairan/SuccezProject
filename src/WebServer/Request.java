@@ -37,12 +37,17 @@ public class Request {
 	public void parse() throws IOException {
 		byte[] b = new byte[1024];
 		StringBuilder req = new StringBuilder(1024);
-		int i = input.read(b);
+		int i;
+
+		i = input.read(b);
 		for (int j = 0; j < i; j++) {
 			req.append((char) b[j]);
 		}
+
 		System.out.print(req.toString());
+
 		uri = parseURI(new String(b));
+
 	}
 
 	/**
