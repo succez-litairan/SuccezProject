@@ -2,6 +2,7 @@ package WebServer;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
 
 /**
  * 用于解析socket中InputStream的原始信息，并根据其原始信息解析出用户请求的目录或文件
@@ -46,7 +47,7 @@ public class Request {
 
 		System.out.print(req.toString());
 
-		uri = parseURI(new String(b));
+		uri = URLDecoder.decode(parseURI(new String(b)), "UTF-8");
 
 	}
 
