@@ -1,55 +1,122 @@
 package WebServer;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Properties;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.log4j.Logger;
 
 public class WebServer {
-	
-	/**
-	 * 保存WebServer的根目录
-	 */
-	static final String WEB_ROOT = "C:/Users/John/SuccezProject/src/WebServer/webroot";
+
+	public static Logger logger = Logger.getLogger(WebServer.class);
+	static String WEB_ROOT;
+	static int Port;
+	static String HOST;
 
 	/**
-	 * 控制服务器的关闭
+	 * 构建一个与ServerSocket通信的线程
+	 * @author 李泰然
 	 */
-	boolean shutdown = false;
+	class ConnectionThread extends Thread {
+		private Socket socket;
+		@SuppressWarnings("unused")
+		private int counter;
 
-	
-	public static void main(String[] args) throws IOException {
-		WebServer webserver = new WebServer();
-		webserver.await();
+		public ConnectionThread(Socket socket, int counter) {
+			this.socket = socket;
+			this.counter = counter;
+		}
+
+		public void run() {
+			try {
+				Request request = new Request(socket);
+				Response response = new Response(socket);
+
+				RequestHandler requestHandler = new RequestHandler(request,
+						response);
+				requestHandler.run();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				if (socket != null) {
+					try {
+						socket.close();
+					} catch (Exception e) {
+					}
+				}
+			}
+		}
 	}
 
 	/**
-	 * 创建一个服务器套接字并侦听8000端口的用户请求
-	 * @throws IOException 
+	 * 初始化服务器并运行
+	 * @throws IOException
 	 */
-	public void await() throws IOException {
-		ServerSocket serverSocket = new ServerSocket(8000, 1,
-				InetAddress.getByName("127.0.0.1"));
-		System.out.println("服务器已运行！");
-		while (!shutdown) {
-			Socket socket =serverSocket.accept();
-			InputStream input = null;
-			OutputStream output = null;
-			
-			input = socket.getInputStream();
-			output = socket.getOutputStream();
-
-			Request request = new Request(input);
-			request.parse();
-
-			Response response = new Response(output);
-			response.setRequest(request);
-			response.sendResponse();
-			
-			socket.close();
+	private void await() throws IOException {
+		getConfig();
+		logger.info("服务器主机号为 " + HOST);
+		logger.info("端口号为 " + Port);
+		logger.info("WEB_ROOT为" + WEB_ROOT);
+		;
+		ServerSocket server = null;
+		try {
+			server = new ServerSocket(Port);
+			Socket socket = null;
+			int i = 1;
+			ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 10, 10,
+					TimeUnit.MINUTES, new ArrayBlockingQueue<Runnable>(5));
+			while (true) {
+				socket = server.accept();
+				ConnectionThread connectionThread = new ConnectionThread(
+						socket, i);
+				executor.execute(connectionThread);
+				i++;
+			}
+		} finally {
+			if (server != null) {
+				try {
+					server.close();
+				} catch (Exception e) {
+				}
+			}
 		}
-		serverSocket.close();
+	}
+
+	/**
+	 * 获取服务器根目录以及端口号的配置信息
+	 * @throws IOException 
+	 * @throws IllegalArgumentException
+	 */
+	private static void getConfig() throws IllegalArgumentException,
+			IOException {
+		File ini = new File(
+				System.getProperty("user.dir") + "\\src\\WebServer",
+				"config.ini");
+		Properties cfg = new Properties();
+		cfg.load(new FileInputStream(ini));
+		WEB_ROOT = cfg.getProperty("WEB_ROOT");
+		if (WEB_ROOT.equals("") == true) {
+			throw new IllegalArgumentException("路径未设置");
+		}
+		Port = Integer.parseInt(cfg.getProperty("PORT"));
+		if (cfg.getProperty("PORT").equals("") == true) {
+			throw new IllegalArgumentException("端口号未设置");
+		}
+		HOST = cfg.getProperty("HOST");
+		if (HOST.equals("") == true) {
+			throw new IllegalArgumentException("服务器地址未设置");
+		}
+	}
+
+	public static void main(String[] args) throws Exception {
+		WebServer webserver = new WebServer();
+		webserver.await();
 	}
 }
